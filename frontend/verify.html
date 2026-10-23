@@ -1,0 +1,365 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate Verification | CertiAI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        header {
+            background: #1e3a8a;
+            color: white;
+            padding: 22px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h2 {
+            font-size: 25px;
+        }
+
+        header span {
+            color: #bfdbfe;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        main {
+            width: 92%;
+            max-width: 650px;
+            margin: 65px auto;
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .intro .icon {
+            font-size: 45px;
+            margin-bottom: 12px;
+        }
+
+        .intro h1 {
+            font-size: 30px;
+            margin-bottom: 12px;
+            color: #0f172a;
+        }
+
+        .intro p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .card {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(15, 23, 42, 0.07);
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            margin-bottom: 16px;
+        }
+
+        input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px #dbeafe;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        button:disabled {
+            opacity: 0.65;
+            cursor: wait;
+        }
+
+        #result {
+            margin-top: 24px;
+        }
+
+        .result-card {
+            padding: 22px;
+            border-radius: 10px;
+        }
+
+        .success {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+        }
+
+        .failure {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #b91c1c;
+        }
+
+        .result-title {
+            font-size: 19px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .success .result-title {
+            color: #15803d;
+        }
+
+        .detail {
+            padding: 11px 0;
+            border-bottom: 1px solid #e2e8f0;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .detail:last-child {
+            border-bottom: none;
+        }
+
+        .detail strong {
+            display: block;
+            color: #475569;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .hint {
+            text-align: center;
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 20px;
+            line-height: 1.5;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 18px 5%;
+            }
+
+            header h2 {
+                font-size: 21px;
+            }
+
+            main {
+                margin: 40px auto;
+            }
+
+            .card {
+                padding: 22px;
+            }
+
+            .intro h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h2>Certi<span>AI</span></h2>
+    <a href="index.html">← Back to Home</a>
+</header>
+
+<main>
+    <section class="intro">
+        <div class="icon">🔐</div>
+        <h1>Certificate Verification</h1>
+        <p>
+            Verify the authenticity of a certificate by entering
+            the unique certificate ID printed on it.
+        </p>
+    </section>
+
+    <section class="card">
+        <form id="verifyForm">
+            <label for="certificateId">Certificate ID</label>
+
+            <input
+                type="text"
+                id="certificateId"
+                placeholder="e.g. 680567F74860"
+                maxlength="100"
+                required
+                autocomplete="off"
+            >
+
+            <button type="submit" id="verifyButton">
+                Verify Certificate
+            </button>
+        </form>
+
+        <div id="result" aria-live="polite"></div>
+
+        <p class="hint">
+            Enter the certificate ID exactly as it appears on your PDF.
+        </p>
+    </section>
+</main>
+
+<footer>
+    © 2026 CertiAI | Certificate Generation and Verification
+</footer>
+
+<script>
+    const form = document.getElementById("verifyForm");
+    const input = document.getElementById("certificateId");
+    const button = document.getElementById("verifyButton");
+    const result = document.getElementById("result");
+
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const certificateId = input.value.trim();
+
+        if (!certificateId) {
+            result.innerHTML = "";
+            input.focus();
+            return;
+        }
+
+        button.disabled = true;
+        button.textContent = "Verifying...";
+        result.innerHTML = "";
+
+        try {
+            const response = await fetch(
+                "http://127.0.0.1:5000/api/verify/" +
+                encodeURIComponent(certificateId)
+            );
+
+            const data = await response.json();
+
+            if (response.ok && data.verified && data.certificate) {
+                const certificate = data.certificate;
+
+                result.innerHTML = `
+                    <div class="result-card success">
+                        <div class="result-title">
+                            ✓ Certificate Verified Successfully
+                        </div>
+
+                        <div class="detail">
+                            <strong>Certificate ID</strong>
+                            <span>${escapeHTML(certificate.certificate_id)}</span>
+                        </div>
+
+                        <div class="detail">
+                            <strong>Participant Name</strong>
+                            <span>${escapeHTML(certificate.participant_name)}</span>
+                        </div>
+
+                        <div class="detail">
+                            <strong>Event</strong>
+                            <span>${escapeHTML(certificate.event)}</span>
+                        </div>
+
+                        <div class="detail">
+                            <strong>Organization</strong>
+                            <span>${escapeHTML(certificate.organization)}</span>
+                        </div>
+
+                        <div class="detail">
+                            <strong>Achievement</strong>
+                            <span>${escapeHTML(certificate.achievement)}</span>
+                        </div>
+
+                        <div class="detail">
+                            <strong>Certificate Date</strong>
+                            <span>${escapeHTML(certificate.certificate_date)}</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                result.innerHTML = `
+                    <div class="result-card failure">
+                        <div class="result-title">
+                            ✕ Certificate Not Verified
+                        </div>
+                        <p>
+                            ${escapeHTML(
+                                data.message || "Certificate ID not found."
+                            )}
+                        </p>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            result.innerHTML = `
+                <div class="result-card failure">
+                    <div class="result-title">Unable to Verify</div>
+                    <p>
+                        Could not connect to the backend.
+                        Make sure the Flask server is running on port 5000.
+                    </p>
+                </div>
+            `;
+        } finally {
+            button.disabled = false;
+            button.textContent = "Verify Certificate";
+        }
+    });
+
+    function escapeHTML(value) {
+        const element = document.createElement("span");
+        element.textContent = String(value ?? "");
+        return element.innerHTML;
+    }
+</script>
+
+</body>
+</html>
